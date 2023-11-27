@@ -121,3 +121,4 @@ const checkForWin = function (board) {
   }
   return false;
 };
+// TODO Check for win is not working. Cannon read properties of "0"
