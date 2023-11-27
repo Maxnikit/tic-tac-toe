@@ -9,6 +9,8 @@ const gameBoard = (function () {
         board[i][j] = 0;
       }
     }
+    console.table(board);
+
     return board;
   };
 
@@ -86,6 +88,10 @@ const gameLogic = (function () {
     }
 
     if (threeInRow(board) || threeInCol(board) || threeInDiag(board)) {
+      if (mark === 1) winner = "X";
+      else if (mark === -1) winner = "O";
+      else return console.error("Winner is nor X, nor O");
+      console.log(`Winner of the round is ${winner}`);
       return true;
     }
     return false;
@@ -93,14 +99,10 @@ const gameLogic = (function () {
   const startNewRound = () => {
     board = gameBoard.getBoard();
     // gameBoard.printBoard();
-    if (gameLogic.checkForWin(-1)) {
-      console.log("0 won round");
-    }
-    if (gameLogic.checkForWin(1)) {
-      console.log("X won round");
-    }
     gameBoard.createBoard();
   };
+  // if (checkForWin(1 || -1)) startNewRound();
+
   return { checkForWin, startNewRound };
 })();
 
@@ -109,7 +111,6 @@ gameBoard.createBoard();
 gameBoard.putMark(1, 0, -1);
 gameBoard.putMark(1, 1, -1);
 gameBoard.putMark(1, 2, -1);
-console.log(`-1(O) win check:  ${gameLogic.checkForWin(-1)}`);
-console.log(`+1(X) win check:  ${gameLogic.checkForWin(1)}`);
-console.log(gameLogic.startNewRound());
+// console.log(gameLogic.startNewRound());
 gameBoard.putMark(1, 1, 1);
+//
