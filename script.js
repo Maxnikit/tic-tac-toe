@@ -5,6 +5,7 @@ const gameBoard = (function () {
   const rows = 3;
   const cols = 3;
   const board = [];
+  let mark = "X";
   const createBoard = () => {
     for (i = 0; i < rows; i++) {
       board[i] = [];
@@ -12,7 +13,6 @@ const gameBoard = (function () {
         board[i][j] = "";
       }
     }
-    console.table(board);
 
     return board;
   };
@@ -23,9 +23,19 @@ const gameBoard = (function () {
       board[row][col] = mark;
     }
     console.table(board);
-    gameLogic.checkForWin(mark);
+
     gameBoard.displayBoard();
+    gameLogic.checkForWin(mark);
   };
+
+  cells.forEach((element) =>
+    element.addEventListener("click", function () {
+      let cellIndex = this.cellIndex;
+      let rowIndex = this.parentNode.rowIndex;
+      mark = mark === "X" ? "O" : "X";
+      gameBoard.putMark(rowIndex, cellIndex, mark);
+    })
+  );
 
   const displayBoard = () => {
     array = gameBoard.getBoard().flat();
@@ -66,6 +76,7 @@ const gameLogic = (function () {
           board[i][j] === board[i][j + 2] &&
           board[i][j] === mark
         ) {
+          console.log("rowWin");
           return true;
         }
       }
@@ -78,6 +89,7 @@ const gameLogic = (function () {
           board[i][j] === board[i + 2][j] &&
           board[i][j] === mark
         ) {
+          console.log("colWin");
           return true;
         }
       }
@@ -88,6 +100,7 @@ const gameLogic = (function () {
         board[0][0] === board[2][2] &&
         board[1][1] === mark
       ) {
+        console.log("diag1Win");
         return true;
       }
       if (
@@ -95,16 +108,18 @@ const gameLogic = (function () {
         board[0][2] === board[2][0] &&
         board[1][1] === mark
       ) {
+        console.log("diag2Win");
         return true;
       }
     }
 
-    if (threeInRow(board) || threeInCol(board) || threeInDiag(board)) {
+    if (threeInRow() || threeInCol() || threeInDiag()) {
+      console.log("3check");
       if (mark === "X") winner = "X";
       else if (mark === "O") winner = "O";
       else return console.error("Winner is nor X, nor O");
       console.log(`Winner of the round is ${winner}`);
-      table.style.backgroundColor = "green";
+      // table.style.backgroundColor = "green";
       return true;
     }
     return false;
@@ -121,20 +136,15 @@ const gameLogic = (function () {
     // Осуществить выбор имени игрока и его маркировку
     gameBoard.displayBoard();
 
-    if (checkForWin("X") || checkForWin("O")) {
-      startNewRound();
-    }
+    // if (checkForWin("X") || checkForWin("O")) {
+    //   startNewRound();
+    // }
   };
   return { checkForWin, startNewRound, gameFlow };
 })();
 
 gameLogic.startNewRound();
-gameBoard.putMark(1, 0, "X");
-gameBoard.putMark(1, 1, "O");
-gameBoard.putMark(1, 2, "X");
-gameBoard.putMark(0, 1, "O");
-gameBoard.putMark(2, 1, "X");
-//
-
-gameBoard.displayBoard();
-gameLogic.gameFlow();
+// Round start
+gameBoard.putMark(0, 0, "X");
+// gameBoard.displayBoard();
+// gameLogic.gameFlow();
