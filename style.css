@@ -5,8 +5,11 @@ table {
   border-collapse: collapse;
   width: 300px;
   height: 300px;
+  margin-inline: auto;
 }
-
+h1 {
+  text-align: center;
+}
 td {
   border: 1px solid black;
   width: 100px;
@@ -14,4 +17,14 @@ td {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
+}
+#display {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+#startBtn {
+  margin-block: 10px;
+  margin-inline: auto;
+  display: block;
 }

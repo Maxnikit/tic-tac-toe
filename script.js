@@ -1,7 +1,17 @@
+// TODO Add a button to start new round
+// TODO Add score system
+// TODO Add a restart button
+// TODO Add line to cross winning cells
+// TODO improve style
 const table = document.querySelector("table");
 const rows = table.querySelectorAll("tr");
 const cells = table.querySelectorAll("td");
+const display = document.getElementById("display");
+
+let mark = "X";
+
 const gameBoard = (function () {
+  let numberOfMoves = 0;
   const rows = 3;
   const cols = 3;
   const board = [];
@@ -18,22 +28,28 @@ const gameBoard = (function () {
   };
 
   const getBoard = () => board;
+  const startBtn = document.getElementById("startBtn");
+  startBtn.addEventListener("click", function () {
+    gameBoard.createBoard();
+    gameBoard.displayBoard();
+  });
   const putMark = (row, col, mark) => {
     if (board[row][col] === "") {
       board[row][col] = mark;
+      gameBoard.numberOfMoves++;
     }
-    console.table(board);
-
     gameBoard.displayBoard();
     gameLogic.checkForWin(mark);
   };
 
   cells.forEach((element) =>
     element.addEventListener("click", function () {
-      let cellIndex = this.cellIndex;
       let rowIndex = this.parentNode.rowIndex;
+      let colIndex = this.cellIndex;
+
       mark = mark === "X" ? "O" : "X";
-      gameBoard.putMark(rowIndex, cellIndex, mark);
+
+      gameBoard.putMark(rowIndex, colIndex, mark);
     })
   );
 
@@ -44,8 +60,9 @@ const gameBoard = (function () {
     });
   };
 
-  return { createBoard, getBoard, putMark, displayBoard };
+  return { createBoard, getBoard, putMark, displayBoard, numberOfMoves };
 })();
+
 const playerLogic = (function () {
   const createPlayer = function (name, mark) {
     let score = 0;
@@ -114,16 +131,23 @@ const gameLogic = (function () {
     }
 
     if (threeInRow() || threeInCol() || threeInDiag()) {
+      console.log("Number of moves is equal to zero");
+
       console.log("3check");
       if (mark === "X") winner = "X";
       else if (mark === "O") winner = "O";
-      else return console.error("Winner is nor X, nor O");
-      console.log(`Winner of the round is ${winner}`);
+      else return console.error("Winner is nor X, nor O?");
+      display.textContent = `Winner of the round is ${winner}!`;
       // table.style.backgroundColor = "green";
+      return true;
+    } else if (gameBoard.numberOfMoves === 9) {
+      gameBoard.numberOfMoves = 0;
+      display.textContent = "Draw!";
       return true;
     }
     return false;
   };
+
   const startNewRound = () => {
     board = gameBoard.getBoard();
     // gameBoard.printBoard();
@@ -143,8 +167,8 @@ const gameLogic = (function () {
   return { checkForWin, startNewRound, gameFlow };
 })();
 
-gameLogic.startNewRound();
-// Round start
-gameBoard.putMark(0, 0, "X");
+// gameLogic.startNewRound();
+// // Round start
+// gameBoard.putMark(0, 0, "X");
 // gameBoard.displayBoard();
 // gameLogic.gameFlow();
