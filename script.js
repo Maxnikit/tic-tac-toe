@@ -120,14 +120,7 @@ const gameLogic = (function () {
     const player2 = playerLogic.createPlayer("Bob", "O");
     // Осуществить выбор имени игрока и его маркировку
     gameBoard.displayBoard();
-    let gameEnd = false;
-    while (!gameEnd) {
-      cells.forEach((cell) => {
-        cell.addEventListener("click", (e) => {
-          gameBoard.putMark(e.target.dataset.row, e.target.dataset.col, mark);
-        });
-      });
-    }
+
     if (checkForWin("X") || checkForWin("O")) {
       startNewRound();
     }
