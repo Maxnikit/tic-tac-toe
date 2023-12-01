@@ -30,28 +30,23 @@ const gameBoard = (function () {
   const getBoard = () => board;
   const startBtn = document.getElementById("startBtn");
   startBtn.addEventListener("click", function () {
-    gameBoard.createBoard();
-    gameBoard.displayBoard();
+    gameLogic.startNewRound();
   });
-  const putMark = (row, col, mark) => {
+  const putMark = function () {
+    let row = this.parentNode.rowIndex;
+    let col = this.cellIndex;
+
+    mark = mark === "X" ? "O" : "X";
     if (board[row][col] === "") {
       board[row][col] = mark;
       gameBoard.numberOfMoves++;
     }
     gameBoard.displayBoard();
+
     gameLogic.checkForWin(mark);
   };
 
-  cells.forEach((element) =>
-    element.addEventListener("click", function () {
-      let rowIndex = this.parentNode.rowIndex;
-      let colIndex = this.cellIndex;
-
-      mark = mark === "X" ? "O" : "X";
-
-      gameBoard.putMark(rowIndex, colIndex, mark);
-    })
-  );
+  cells.forEach((element) => element.addEventListener("click", putMark));
 
   const displayBoard = () => {
     array = gameBoard.getBoard().flat();
@@ -93,7 +88,9 @@ const gameLogic = (function () {
           board[i][j] === board[i][j + 2] &&
           board[i][j] === mark
         ) {
-          console.log("rowWin");
+          let row = table.rows[i];
+          let cells = [row.cells[j], row.cells[j + 1], row.cells[j + 2]];
+          cells.forEach((cell) => cell.classList.add("winning-cell"));
           return true;
         }
       }
@@ -106,7 +103,12 @@ const gameLogic = (function () {
           board[i][j] === board[i + 2][j] &&
           board[i][j] === mark
         ) {
-          console.log("colWin");
+          let cells = [
+            table.rows[i].cells[j],
+            table.rows[i + 1].cells[j],
+            table.rows[i + 2].cells[j],
+          ];
+          cells.forEach((cell) => cell.classList.add("winning-cell"));
           return true;
         }
       }
@@ -117,7 +119,12 @@ const gameLogic = (function () {
         board[0][0] === board[2][2] &&
         board[1][1] === mark
       ) {
-        console.log("diag1Win");
+        let cells = [
+          table.rows[0].cells[0],
+          table.rows[1].cells[1],
+          table.rows[2].cells[2],
+        ];
+        cells.forEach((cell) => cell.classList.add("winning-cell"));
         return true;
       }
       if (
@@ -125,15 +132,24 @@ const gameLogic = (function () {
         board[0][2] === board[2][0] &&
         board[1][1] === mark
       ) {
-        console.log("diag2Win");
+        let cells = [
+          table.rows[0].cells[2],
+          table.rows[1].cells[1],
+          table.rows[2].cells[0],
+        ];
+        cells.forEach((cell) => cell.classList.add("winning-cell"));
         return true;
       }
     }
 
     if (threeInRow() || threeInCol() || threeInDiag()) {
       console.log("Number of moves is equal to zero");
+      cells.forEach((cell) => {
+        if (!cell.classList.contains("winning-cell"))
+          cell.classList.add("losing-cell");
+        cell.removeEventListener("click", gameBoard.putMark);
+      });
 
-      console.log("3check");
       if (mark === "X") winner = "X";
       else if (mark === "O") winner = "O";
       else return console.error("Winner is nor X, nor O?");
@@ -149,11 +165,15 @@ const gameLogic = (function () {
   };
 
   const startNewRound = () => {
-    board = gameBoard.getBoard();
-    // gameBoard.printBoard();
     gameBoard.createBoard();
+    gameBoard.displayBoard();
+    cells.forEach((cell) => {
+      cell.classList.remove("winning-cell", "losing-cell");
+      cell.addEventListener("click", gameBoard.putMark);
+    });
+    display.textContent = "Make your move!";
   };
-  // if (checkForWin(1 || -1)) startNewRound();
+
   const gameFlow = () => {
     const player1 = playerLogic.createPlayer("Max", "X");
     const player2 = playerLogic.createPlayer("Bob", "O");
@@ -172,3 +192,5 @@ const gameLogic = (function () {
 // gameBoard.putMark(0, 0, "X");
 // gameBoard.displayBoard();
 // gameLogic.gameFlow();
+gameBoard.createBoard();
+gameBoard.displayBoard();
