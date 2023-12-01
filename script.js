@@ -53,6 +53,13 @@ const gameBoard = (function () {
     array.forEach((mark, i) => {
       cells[i].textContent = mark;
     });
+    cells.forEach((cell) => {
+      if (cell.innerHTML === "X") {
+        cell.innerHTML = `<img src="img/X.png"/>`;
+      } else if (cell.innerHTML === "O") {
+        cell.innerHTML = `<img src="img/O.png"/>`;
+      }
+    });
   };
 
   return { createBoard, getBoard, putMark, displayBoard, numberOfMoves };
@@ -179,18 +186,20 @@ const gameLogic = (function () {
     const player2 = playerLogic.createPlayer("Bob", "O");
     // Осуществить выбор имени игрока и его маркировку
     gameBoard.displayBoard();
-
-    // if (checkForWin("X") || checkForWin("O")) {
-    //   startNewRound();
-    // }
   };
   return { checkForWin, startNewRound, gameFlow };
 })();
-
-// gameLogic.startNewRound();
-// // Round start
-// gameBoard.putMark(0, 0, "X");
-// gameBoard.displayBoard();
-// gameLogic.gameFlow();
 gameBoard.createBoard();
 gameBoard.displayBoard();
+
+const inputContainers = document.querySelectorAll(".nameInput");
+const inputs = document.querySelectorAll("Input");
+const setNames = function () {
+  inputs.forEach((input) => {
+    let chosenName = input.value;
+    let name = document.createElement("name");
+    name.textContent = chosenName;
+    input.parentElement.appendChild(name);
+    input.remove();
+  });
+};

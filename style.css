@@ -14,8 +14,23 @@
 body {
   background-color: var(--background);
   color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+.nameInputs {
+  /* border: 1px black solid; */
+  display: flex;
+  gap: 40px;
+}
+.nameInput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.point {
+  visibility: hidden;
+}
 table {
   border-collapse: collapse;
   width: 300px;
@@ -52,4 +67,3 @@ td {
 .losing-cell {
   background-color: #ff6a6a;
 }
-/* firework */
