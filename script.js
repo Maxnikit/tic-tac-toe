@@ -8,14 +8,12 @@ const rows = table.querySelectorAll("tr");
 const cells = table.querySelectorAll("td");
 const display = document.getElementById("display");
 
-let mark = "X";
-
 const gameBoard = (function () {
   let numberOfMoves = 0;
   const rows = 3;
   const cols = 3;
   const board = [];
-  let mark = "X";
+  let mark = "O";
   const createBoard = () => {
     for (i = 0; i < rows; i++) {
       board[i] = [];
@@ -29,7 +27,15 @@ const gameBoard = (function () {
 
   const getBoard = () => board;
   const startBtn = document.getElementById("startBtn");
+  const restartBtn = document.createElement("button");
+  restartBtn.id = "restartBtn";
+  restartBtn.textContent = "Restart";
   startBtn.addEventListener("click", function () {
+    gameLogic.startGame();
+    startBtn.replaceWith(restartBtn);
+  });
+
+  restartBtn.addEventListener("click", function () {
     gameLogic.startNewRound();
   });
   const putMark = function () {
@@ -46,7 +52,7 @@ const gameBoard = (function () {
     gameLogic.checkForWin(mark);
   };
 
-  cells.forEach((element) => element.addEventListener("click", putMark));
+  // cells.forEach((element) => element.addEventListener("click", putMark));
 
   const displayBoard = () => {
     array = gameBoard.getBoard().flat();
@@ -65,27 +71,12 @@ const gameBoard = (function () {
   return { createBoard, getBoard, putMark, displayBoard, numberOfMoves };
 })();
 
-const playerLogic = (function () {
-  const createPlayer = function (name, mark) {
-    let score = 0;
-    const getScore = () => score;
-    const giveScore = () => {
-      score++;
-    };
-    return {
-      name,
-      mark,
-      getScore,
-      giveScore,
-    };
-  };
-
-  return { createPlayer };
-})();
-
 const gameLogic = (function () {
   let board = gameBoard.getBoard();
-
+  let scoreX = 0;
+  let scoreO = 0;
+  const scoreXDisplay = document.querySelector(".scoreXDisplay");
+  const scoreODisplay = document.querySelector(".scoreODisplay");
   const checkForWin = function (mark) {
     function threeInRow() {
       let j = 0;
@@ -150,18 +141,23 @@ const gameLogic = (function () {
     }
 
     if (threeInRow() || threeInCol() || threeInDiag()) {
-      console.log("Number of moves is equal to zero");
       cells.forEach((cell) => {
         if (!cell.classList.contains("winning-cell"))
           cell.classList.add("losing-cell");
         cell.removeEventListener("click", gameBoard.putMark);
       });
 
-      if (mark === "X") winner = "X";
-      else if (mark === "O") winner = "O";
-      else return console.error("Winner is nor X, nor O?");
+      if (mark === "X") {
+        winner = "X";
+        giveScore("X");
+      } else if (mark === "O") {
+        winner = "O";
+        giveScore("O");
+      } else return console.error("Winner is nor X, nor O?");
       display.textContent = `Winner of the round is ${winner}!`;
-      // table.style.backgroundColor = "green";
+      gameBoard.numberOfMoves = 0;
+      displayScore();
+
       return true;
     } else if (gameBoard.numberOfMoves === 9) {
       gameBoard.numberOfMoves = 0;
@@ -170,7 +166,23 @@ const gameLogic = (function () {
     }
     return false;
   };
+  const startGame = () => {
+    gameLogic.setNames();
+    gameLogic.displayScore();
 
+    gameLogic.startNewRound();
+  };
+  const giveScore = function (mark) {
+    if (mark === "X") {
+      scoreX++;
+    } else if (mark === "O") {
+      scoreO++;
+    }
+  };
+  const displayScore = function () {
+    scoreXDisplay.textContent = `Score:${scoreX}`;
+    scoreODisplay.textContent = `Score:${scoreO}`;
+  };
   const startNewRound = () => {
     gameBoard.createBoard();
     gameBoard.displayBoard();
@@ -180,26 +192,24 @@ const gameLogic = (function () {
     });
     display.textContent = "Make your move!";
   };
-
-  const gameFlow = () => {
-    const player1 = playerLogic.createPlayer("Max", "X");
-    const player2 = playerLogic.createPlayer("Bob", "O");
-    // Осуществить выбор имени игрока и его маркировку
-    gameBoard.displayBoard();
+  const setNames = function () {
+    const inputs = document.querySelectorAll("Input");
+    inputs.forEach((input) => {
+      let chosenName = input.value;
+      let name = document.createElement("name");
+      name.textContent = chosenName;
+      input.replaceWith(name);
+    });
   };
-  return { checkForWin, startNewRound, gameFlow };
+
+  return {
+    checkForWin,
+    startGame,
+    startNewRound,
+    setNames,
+    giveScore,
+    displayScore,
+  };
 })();
 gameBoard.createBoard();
 gameBoard.displayBoard();
-
-const inputContainers = document.querySelectorAll(".nameInput");
-const inputs = document.querySelectorAll("Input");
-const setNames = function () {
-  inputs.forEach((input) => {
-    let chosenName = input.value;
-    let name = document.createElement("name");
-    name.textContent = chosenName;
-    input.parentElement.appendChild(name);
-    input.remove();
-  });
-};
